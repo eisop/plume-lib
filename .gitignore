@@ -2,9 +2,8 @@
 *.elc
 *~
 TAGS
-bin/checklink-persistent-errors-test/errors1.output
-bin/checklink-persistent-errors-test/errors2.output
-bin/sort-directory-order-test/lines1.output
+bin/google-java-format-1.0-all-deps.jar
+java/.run-google-java-format/
 java/.class-files-timestamp
 java/.javadoc-timestamp
 java/.optionsdoc-timestamp
@@ -12,6 +11,7 @@ java/.test-timestamp
 java/Makefile.user
 java/api
 java/ical4j.properties
+java/jacoco.exec
 java/lookup.html
 java/lookup.jar
 java/lookup.txt
@@ -24,6 +24,9 @@ java/src/plume/lookup.jar
 java/src/plume/task_manager.jar
 java/src/plume/utilMDE.jar
 java/task_manager.jar
+tests/checklink-persistent-errors-test/errors1.output
+tests/checklink-persistent-errors-test/errors2.output
+tests/sort-directory-order-test/lines1.output
 
 # Ignore Eclipse output
 bin-eclipse/

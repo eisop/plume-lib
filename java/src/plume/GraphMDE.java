@@ -1,17 +1,24 @@
 package plume;
 
 import java.io.PrintStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /*>>>
 import org.checkerframework.checker.nullness.qual.*;
 */
 
-/**
- * Graph utility methods.  This class does not model a graph:  all methods
- * are static.
- */
-public class GraphMDE {
+/** Graph utility methods. This class does not model a graph: all methods are static. */
+public final class GraphMDE {
+
+  /** This class is a collection of methods; it does not represent anything. */
+  private GraphMDE() {
+    throw new Error("do not instantiate");
+  }
 
   // Algorithms for computing dominators:
   //
@@ -42,27 +49,26 @@ public class GraphMDE {
   // follows the Wikipedia one.
 
   /**
-   * Computes, for each node in the graph, its set of (pre-)dominators.
-   * Supply a successor graph if you want post-dominators.
+   * Computes, for each node in the graph, its set of (pre-)dominators. Supply a successor graph if
+   * you want post-dominators.
+   *
    * @param <T> type of the graph nodes
    * @param predecessors a graph, represented as a predecessor map
    * @return a map from each node to a list of its pre-dominators
-   **/
-  public static
-  <T> Map<T,List<T>> dominators(Map<T,List</*@KeyFor("#1")*/ T>> predecessors) {
+   */
+  public static <T> Map<T, List<T>> dominators(Map<T, List</*@KeyFor("#1")*/ T>> predecessors) {
 
     // Map</*@KeyFor({"preds","dom"})*/ T,List</*@KeyFor({"preds","dom"})*/ T>> dom = new HashMap</*@KeyFor({"preds","dom"})*/ T,List</*@KeyFor({"preds","dom"})*/ T>>();
-    Map<T,List<T>> dom = new HashMap<T,List<T>>();
+    Map<T, List<T>> dom = new HashMap<T, List<T>>();
 
     @SuppressWarnings("keyfor") // every element of pred's value will be a key for dom
-    Map<T,List</*@KeyFor({"dom"})*/ T>> preds = predecessors;
+    Map<T, List</*@KeyFor({"dom"})*/ T>> preds = predecessors;
 
     List<T> nodes = new ArrayList<T>(preds.keySet());
 
     // Compute roots & non-roots, for convenience
     List</*@KeyFor({"preds","dom"})*/ T> roots = new ArrayList<T>();
     List</*@KeyFor({"preds","dom"})*/ T> non_roots = new ArrayList<T>();
-
 
     // Initialize result:  for roots just the root, otherwise everything
     for (T node : preds.keySet()) {
@@ -88,10 +94,10 @@ public class GraphMDE {
     //  * every key in dom
     //  * elery element of every dom value
     // So, the type of pred is now
-    //   
+    //
     // rather than its original type
     //   Map<T,List</*@KeyFor("preds")*/ T>> preds
-    
+
     boolean changed = true;
     while (changed) {
       changed = false;
@@ -108,10 +114,11 @@ public class GraphMDE {
             new_doms.retainAll(dom_of_pred);
           }
         }
-        assert new_doms != null : "@AssumeAssertion(nullness): the loop was entered at least once because this is a non-root, which has at least one predecessor";
+        assert new_doms != null
+            : "@AssumeAssertion(nullness): the loop was entered at least once because this is a non-root, which has at least one predecessor";
         new_doms.add(node);
         assert dom.containsKey(node);
-        if (! dom.get(node).equals(new_doms)) {
+        if (!dom.get(node).equals(new_doms)) {
           dom.put(node, new_doms);
           changed = true;
         }
@@ -130,10 +137,17 @@ public class GraphMDE {
     return dom;
   }
 
-  public static
-  <T> void print(Map<T,List<T>> graph, PrintStream ps, int indent) {
+  /**
+   * Print a representation of the graph to ps, indented by intent spaces.
+   *
+   * @param <T> the type of nodes of the graph
+   * @param graph the graph to print
+   * @param ps the PrintStream to which to print the graph
+   * @param indent the number of spaces by which to indent the printed representation
+   */
+  public static <T> void print(Map<T, List<T>> graph, PrintStream ps, int indent) {
     String indentString = "";
-    for (int i=0; i<indent; i++) {
+    for (int i = 0; i < indent; i++) {
       indentString += " ";
     }
     for (T node : graph.keySet()) {
@@ -143,5 +157,4 @@ public class GraphMDE {
       }
     }
   }
-
 }

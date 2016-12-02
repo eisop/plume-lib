@@ -1,22 +1,23 @@
 #! /usr/bin/env python
 
-# This script allows you to ignore transient errors in checklink output.
-# Run it like this:
-#   checklink-persistent-errors BASENAME N
-# BASENAME is a prefix for files containing the output of the checklink program.
-# N is an integer; this program will read that many of the most recent files.
+r"""This script allows you to ignore transient errors in checklink output.
+Run it like this:
+  checklink-persistent-errors BASENAME N
+BASENAME is a prefix for files containing the output of the checklink program.
+N is an integer; this program will read that many of the most recent files.
 
-# The checklink program checks for broken links.  It is a hassle when
-# checklink reports a broken link that is really due to network problems or
-# server downtime.  This program takes the output of multiple runs of
-# checklink, and it only reports the errors that appear in all of them.
+The checklink program checks for broken links.  It is a hassle when
+checklink reports a broken link that is really due to network problems or
+server downtime.  This program takes the output of multiple runs of
+checklink, and it only reports the errors that appear in all of them.
 
-# For example, you might put in your crontab file:
-#   pl=/homes/gws/mernst/bin/src/plume-lib
-#   00 20 * * *	$pl/bin/checklink -q -r `grep -v '^#' $pl/bin/checklink-args.txt` http://www.cs.washington.edu/education/courses/cse140/13wi/ > /scratch/mernst/checklink-output/140.txt-`date +\%Y\%m\%d` 2>&1
-#   59 20 * * *	$pl/bin/checklink-persistent-errors /scratch/mernst/checklink-output/140.txt 2
-# where the first job runs checklink every day, saving the output to a file,
-# and the second job reports all errors that are in the two most recent files.
+For example, you might put in your crontab file:
+  pl=/homes/gws/mernst/bin/src/plume-lib
+  00 20 * * *	$pl/bin/checklink -q -r `grep -v '^#' $pl/bin/checklink-args.txt` http://www.cs.washington.edu/education/courses/cse140/13wi/ > /scratch/mernst/checklink-output/140.txt-`date +\%Y\%m\%d` 2>&1
+  59 20 * * *	$pl/bin/checklink-persistent-errors /scratch/mernst/checklink-output/140.txt 2
+where the first job runs checklink every day, saving the output to a file,
+and the second job reports all errors that are in the two most recent files.
+"""
 
 # This script could optionally delete older output files.
 # But, they are small and there is no harm in keeping them around indefinitely.
@@ -37,6 +38,8 @@ DEBUG_PRINTING = False
 # DEBUG_PRINTING = True
 
 def main():
+    """Main routine for checklink-persistent-errors.
+Takes 2 arguments, a basename and a number of files to read."""
 
     if len(sys.argv) != 3:
         print("%s requires exactly 2 arguments, got %d" % (sys.argv[0], len(sys.argv)-1))
@@ -54,8 +57,8 @@ def main():
     # results is a list of maps
     results = []
     for i in range(0, instances):
-        file = files[-(i+1)]
-        results.append(parse_checklink_output_file(file))
+        this_file = files[-(i+1)]
+        results.append(parse_checklink_output_file(this_file))
 
     urls = set(results[0].keys())
     for r in results:
@@ -83,6 +86,7 @@ def main():
 
 
 def paragraphs(fileobj, separator='\n'):
+    """Yield each paragraph from fileobj, one by one."""
     if separator[-1:] != '\n': separator += '\n'
     paragraph = []
     for line in fileobj:
@@ -97,23 +101,23 @@ def paragraphs(fileobj, separator='\n'):
 LISTOF1 = "\nList of broken links and other issues:\n"
 LISTOF2 = "\nList of redirects\n"
 
-def parse_checklink_output_file(file):
+def parse_checklink_output_file(checklink_output_file):
     "Returns a map from URLs to list of problem reports for the URL"
-    if DEBUG_PARSING: print("parse_checklink_output_file: %s" % file)
+    if DEBUG_PARSING: print("parse_checklink_output_file: %s" % checklink_output_file)
     result = {}
     url = None
-    f = open(file, 'r')
-    paragraphs = f.read().split("\n\n")
-    for p in paragraphs:
+    f = open(checklink_output_file, 'r')
+    paras = f.read().split("\n\n") # paragraphs
+    for p in paras:
         if DEBUG_PARSING: print("url = %s, paragraph = <<<%s>>>" % (url, p))
         if re.match("\n?Processing\t", p):
             url = p
             continue
         if (p == "----------------------------------------"
-            # for very first record
-            or p == "\n----------------------------------------"
-            # for empty file
-            or p == ""):
+                # for very first record
+                or p == "\n----------------------------------------"
+                # for empty file
+                or p == ""):
             url = None
             continue
         if p.startswith(LISTOF1):
@@ -123,7 +127,7 @@ def parse_checklink_output_file(file):
         if p.endswith("\n"):
             p = p[:-1]
         if DEBUG_PARSING: print("Cleaned-up paragraph: <<<%s>>>" % p)
-        if (url == None): print("bad url None for <<<%s>>>" % p)
+        if (url is None): print("bad url None for <<<%s>>>" % p)
         if not (url in result):
             result[url] = []
         if DEBUG_PARSING: print("adding to result[%s]: <<<%s>>>" % (url, p))

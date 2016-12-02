@@ -5,7 +5,6 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-//Can't "import java.util.*;" because of Date, etc.
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -14,7 +13,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
@@ -47,34 +45,39 @@ import org.checkerframework.dataflow.qual.Pure;
 
 // TODO:  Fix "Problem:  any all-day events will be treated as UTC." (see below)
 
-
 /**
- * Given one or more calendars in <a href="http://en.wikipedia.org/wiki/ICalendar">iCalendar format</a>, produces a textual summary
- * of available times.
- * This is useful for sending someone a list of acceptable times for a meeting.
- * Also see the <tt>ical-available</tt> Emacs function, which inserts the
- * output of this program.
+ * Given one or more calendars in <a href="https://en.wikipedia.org/wiki/ICalendar">iCalendar
+ * format</a>, produces a textual summary of available times. This is useful for sending someone a
+ * list of acceptable times for a meeting. Also see the {@code ical-available} Emacs function, which
+ * inserts the output of this program.
  *
- * The command-line options are as follows:
+ * <p>The command-line options are as follows:
  * <!-- start options doc (DO NOT EDIT BY HAND) -->
+ *
  * <ul>
- *   <li id="option:date"><b>--date=</b><i>string</i>. first date to summarize [default today]</li>
- *   <li id="option:days"><b>--days=</b><i>int</i>. number of calendar days to summarize [default 8]</li>
- *   <li id="option:iCal-URL"><b>--iCal-URL=</b><i>url</i> <tt>[+]</tt>. For a Google calendar:  go to settings, then click on the green "ICAL"
- *  icon for the "private address".</li>
- *   <li id="option:business-hours"><b>--business-hours=</b><i>string</i>. A list of time ranges, expressed as a String.
- *  Example: 9am-5pm,7:30pm-9:30pm [default 9am-5pm]</li>
- *   <li id="option:timezone1"><b>--timezone1=</b><i>timezone</i>. Time zone as an Olson timezone ID, e.g.: America/New_York.
- *  Available times are printed in this time zone.  It defaults to the
- *  system time zone.</li>
- *   <li id="option:timezone2"><b>--timezone2=</b><i>timezone</i>. Time zone as an Olson timezone ID, e.g.: America/New_York.
- *  If set, then free times are printed in two time zones.</li>
- *   <li id="option:debug"><b>--debug=</b><i>boolean</i>. enable debugging output [default false]</li>
+ *   <li id="option:date"><b>--date=</b><i>string</i>. first date to summarize [default today]
+ *   <li id="option:days"><b>--days=</b><i>int</i>. number of calendar days to summarize [default 8]
+ *   <li id="option:iCal-URL"><b>--iCal-URL=</b><i>url</i> <code>[+]</code>. For a Google calendar:
+ *       go to settings, then click on the green "ICAL" icon for the "private address".
+ *   <li id="option:business-hours"><b>--business-hours=</b><i>string</i>. A list of time ranges,
+ *       expressed as a String. Example: 9am-5pm,7:30pm-9:30pm [default 9am-5pm]
+ *   <li id="option:timezone1"><b>--timezone1=</b><i>timezone</i>. Time zone as an Olson timezone
+ *       ID, e.g.: America/New_York. Available times are printed in this time zone. It defaults to
+ *       the system time zone.
+ *   <li id="option:timezone2"><b>--timezone2=</b><i>timezone</i>. Time zone as an Olson timezone
+ *       ID, e.g.: America/New_York. If set, then free times are printed in two time zones.
+ *   <li id="option:debug"><b>--debug=</b><i>boolean</i>. enable debugging output [default false]
  * </ul>
- * <tt>[+]</tt> marked option can be specified multiple times
+ *
+ * <code>[+]</code> marked option can be specified multiple times
  * <!-- end options doc -->
- **/
-public class ICalAvailable {
+ */
+public final class ICalAvailable {
+
+  /** This class is a collection of methods; it does not represent anything. */
+  private ICalAvailable() {
+    throw new Error("do not instantiate");
+  }
 
   /// User options
 
@@ -87,21 +90,19 @@ public class ICalAvailable {
   public static int days = 8;
 
   /**
-   * For a Google calendar:  go to settings, then click on the green "ICAL"
-   * icon for the "private address".
+   * For a Google calendar: go to settings, then click on the green "ICAL" icon for the "private
+   * address".
    */
   @Option("<url> schedule in iCal format")
   public static List<String> iCal_URL = new ArrayList<String>();
 
-
-  /**
-   * A list of time ranges, expressed as a String.
-   * Example: 9am-5pm,7:30pm-9:30pm */
+  /** A list of time ranges, expressed as a String. Example: 9am-5pm,7:30pm-9:30pm */
   @Option("time ranges during which appointments are permitted")
   public static String business_hours = "9am-5pm";
 
-  static List<Period> businessHours = new ArrayList<Period>();   // initialize to 9am-5pm
-  static List<Integer> businessDays = new ArrayList<Integer>();   // initialize to Mon-Fri
+  static List<Period> businessHours = new ArrayList<Period>(); // initialize to 9am-5pm
+  static List<Integer> businessDays = new ArrayList<Integer>(); // initialize to Mon-Fri
+
   static {
     businessDays.add(1);
     businessDays.add(2);
@@ -112,12 +113,11 @@ public class ICalAvailable {
 
   static TimeZoneRegistry tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry();
   /**
-   * Time zone as an Olson timezone ID, e.g.: America/New_York.
-   * Available times are printed in this time zone.  It defaults to the
-   * system time zone.
-   **/
+   * Time zone as an Olson timezone ID, e.g.: America/New_York. Available times are printed in this
+   * time zone. It defaults to the system time zone.
+   */
   // don't need "e.g.: America/New_York" in message:  the default is an example
-  @Option(value="<timezone> time zone, e.g.: America/New_York", noDocDefault=true)
+  @Option(value = "<timezone> time zone, e.g.: America/New_York", noDocDefault = true)
   public static String timezone1 = TimeZone.getDefault().getID();
   // Either of these initializations causes a NullPointerException
   // at net.fortuna.ical4j.model.TimeZone.<init>(TimeZone.java:67)
@@ -128,10 +128,12 @@ public class ICalAvailable {
   // may be different than the other timezone's notion of a "day".  This
   // doesn't seem important enough to fix right now.
   /**
-   * Time zone as an Olson timezone ID, e.g.: America/New_York.
-   * If set, then free times are printed in two time zones. */
+   * Time zone as an Olson timezone ID, e.g.: America/New_York. If set, then free times are printed
+   * in two time zones.
+   */
   @Option("<timezone> optional second time zone, e.g.: America/New_York")
   public static /*@Nullable*/ String timezone2;
+
   static /*@Nullable*/ TimeZone tz2;
 
   /// Other variables
@@ -139,7 +141,7 @@ public class ICalAvailable {
   @Option("enable debugging output")
   public static boolean debug = false;
 
-  /** The appointments (the times that are unavailable for a meeting) */
+  /** The appointments (the times that are unavailable for a meeting). */
   static List<Calendar> calendars = new ArrayList<Calendar>();
 
   static DateFormat tf = DateFormat.getTimeInstance(DateFormat.SHORT, Locale.US);
@@ -151,8 +153,8 @@ public class ICalAvailable {
   @SuppressWarnings("deprecation") // for iCal4j's use of Date.{get,set}Minutes
   /*@EnsuresNonNull("tz1")*/
   static void processOptions(String[] args) {
-    Options options = new Options ("ICalAvailable [options]", ICalAvailable.class);
-    String[] remaining_args = options.parse_or_usage (args);
+    Options options = new Options("ICalAvailable [options]", ICalAvailable.class);
+    String[] remaining_args = options.parse_or_usage(args);
     if (remaining_args.length != 0) {
       System.err.println("Unrecognized arguments: " + Arrays.toString(remaining_args));
       System.exit(1);
@@ -171,18 +173,18 @@ public class ICalAvailable {
     if (timezone2 != null) {
       tz2 = tzRegistry.getTimeZone(canonicalizeTimezone(timezone2));
       if (tz2 == null) {
-        System.err.println("Unrecognized time zone (see http://php.net/manual/en/timezones.php ): " + timezone2);
+        System.err.println(
+            "Unrecognized time zone (see http://php.net/manual/en/timezones.php ): " + timezone2);
         System.exit(1);
       }
     }
 
     try {
-      if (! date.equals("today")) {
+      if (!date.equals("today")) {
         start_date = new DateTime(parseDate(date));
       }
     } catch (Exception e) {
-      if (Pattern.matches(".*/.*", date)
-          && ! Pattern.matches(".*/.*/", date)) {
+      if (Pattern.matches(".*/.*", date) && !Pattern.matches(".*/.*/", date)) {
         System.err.println("Could not parse date (missing year?): " + date);
         System.exit(1);
       } else {
@@ -218,8 +220,8 @@ public class ICalAvailable {
             byte[] buffer = new byte[1024];
             int len = url_is.read(buffer);
             while (len != -1) {
-                System.out.write(buffer, 0, len);
-                len = url_is.read(buffer);
+              System.out.write(buffer, 0, len);
+              len = url_is.read(buffer);
             }
             System.out.println();
           }
@@ -245,8 +247,8 @@ public class ICalAvailable {
     }
   }
 
-  static Map<String,String> canonicalTimezones = new HashMap<String,String>();
-  static Map<String,String> printedTimezones = new HashMap<String,String>();
+  static Map<String, String> canonicalTimezones = new HashMap<String, String>();
+  static Map<String, String> printedTimezones = new HashMap<String, String>();
   // Yuck, this should really be a separate configuration file.
   static {
     canonicalTimezones.put("eastern", "America/New_York");
@@ -274,7 +276,6 @@ public class ICalAvailable {
     printedTimezones.put("Pacific Standard Time", "Pacific");
   }
 
-
   static String canonicalizeTimezone(String timezone) {
     String result = canonicalTimezones.get(timezone.toLowerCase());
     return (result == null) ? timezone : result;
@@ -287,7 +288,8 @@ public class ICalAvailable {
     return (result == null) ? tzString : result;
   }
 
-  static /*@Regex(4)*/ Pattern timeRegexp = Pattern.compile("([0-2]?[0-9])(:([0-5][0-9]))?([aApP][mM])?");
+  static /*@Regex(4)*/ Pattern timeRegexp =
+      Pattern.compile("([0-2]?[0-9])(:([0-5][0-9]))?([aApP][mM])?");
 
   // Parse a time like "9:30pm"
   @SuppressWarnings("deprecation") // for iCal4j
@@ -295,11 +297,12 @@ public class ICalAvailable {
   static DateTime parseTime(String time) {
 
     Matcher m = timeRegexp.matcher(time);
-    if (! m.matches()) {
+    if (!m.matches()) {
       System.err.println("Bad time: " + time);
       System.exit(1);
     }
-    @SuppressWarnings("nullness") // Regex Checker imprecision:  matches() guarantees that group 1 exists in regexp
+    @SuppressWarnings(
+        "nullness") // Regex Checker imprecision:  matches() guarantees that group 1 exists in regexp
     /*@NonNull*/ String hourString = m.group(1);
     String minuteString = m.group(3);
     String ampmString = m.group(4);
@@ -322,7 +325,6 @@ public class ICalAvailable {
     return result;
   }
 
-
   // For debugging
   static void printOptions() {
     System.out.println("business_hours: " + business_hours);
@@ -343,20 +345,20 @@ public class ICalAvailable {
     if (debug) {
       System.err.printf("Testing %d days%n", days);
     }
-    for (int i = 0; i<days; i++) {
+    for (int i = 0; i < days; i++) {
       available.addAll(oneDayAvailable(start_date, calendars));
       start_date = new DateTime(start_date.getTime() + 1000 * 60 * 60 * 24);
       start_date.setTimeZone(tz1);
     }
 
     if (tz2 != null) {
-      System.out.printf("Timezone: %s  [Timezone: %s]%n",
-                        printedTimezone(tz1), printedTimezone(tz2));
+      System.out.printf(
+          "Timezone: %s  [Timezone: %s]%n", printedTimezone(tz1), printedTimezone(tz2));
     }
     String lastDateString = null;
     for (Period p : available) {
       String dateString = formatDate(p.getStart(), tz1);
-      if (! dateString.equals(lastDateString)) {
+      if (!dateString.equals(lastDateString)) {
         lastDateString = dateString;
         System.out.println();
         System.out.println(dateString + ":");
@@ -371,7 +373,6 @@ public class ICalAvailable {
         System.out.printf("%-20s[%s]%n", rangeString, rangeString2);
       }
     }
-
   }
 
   static String rangeString(Period p, TimeZone tz) {
@@ -390,21 +391,24 @@ public class ICalAvailable {
     // "Object" because PeriodList extends TreeSet, but it really ought to
     // extend TreeSet</*@NonNull*/ Period>
     for (Object p : pl) {
-      assert p != null : "@AssumeAssertion(nullness): non-generic container class; elements are non-null";
-      result.append(rangeString((Period)p, tz) + "\n");
+      assert p != null
+          : "@AssumeAssertion(nullness): non-generic container class; elements are non-null";
+      result.append(rangeString((Period) p, tz) + "\n");
     }
     return result.toString();
   }
 
-
   /**
-   * Creates a new DateTime with date taken from the first argument and
-   * time taken from the second argument.
-   **/
+   * Creates a new DateTime with date taken from the first argument and time taken from the second
+   * argument.
+   *
+   * @return the merged DateTime
+   */
   @SuppressWarnings("deprecation") // for iCal4j
   static DateTime mergeDateAndTime(DateTime date, DateTime time) {
-    if (! date.getTimeZone().equals(time.getTimeZone())) {
-      throw new Error(String.format("non-matching timezones: %s %s", date.getTimeZone(), time.getTimeZone()));
+    if (!date.getTimeZone().equals(time.getTimeZone())) {
+      throw new Error(
+          String.format("non-matching timezones: %s %s", date.getTimeZone(), time.getTimeZone()));
     }
     DateTime result = new DateTime(date);
     result.setHours(time.getHours());
@@ -412,7 +416,6 @@ public class ICalAvailable {
     result.setSeconds(time.getSeconds());
     return result;
   }
-
 
   // TODO:  don't propose times that are before the current moment.
 
@@ -426,7 +429,7 @@ public class ICalAvailable {
     List<Period> result = new ArrayList<Period>();
     @SuppressWarnings("deprecation") // for iCal4j
     int dayOfWeek = day.getDay();
-    if (! businessDays.contains(dayOfWeek)) {
+    if (!businessDays.contains(dayOfWeek)) {
       return result;
     }
 
@@ -484,19 +487,21 @@ public class ICalAvailable {
     return result;
   }
 
-  static SimpleDateFormat[] dateFormats
-    = { new SimpleDateFormat( "yyyy/MM/dd" ),
-        new SimpleDateFormat( "MM/dd/yyyy" ),
-        new SimpleDateFormat( "MM/dd/yy" ),
-        // Bad idea:  sets year to 1970.  So require the year, at least for now.
-        // new SimpleDateFormat( "MM/dd" ),
+  static SimpleDateFormat[] dateFormats = {
+    new SimpleDateFormat("yyyy/MM/dd"),
+    new SimpleDateFormat("MM/dd/yyyy"),
+    new SimpleDateFormat("MM/dd/yy"),
+    // Bad idea:  sets year to 1970.  So require the year, at least for now.
+    // new SimpleDateFormat("MM/dd"),
   };
 
   /**
    * Parses a date when formatted in several common formats.
+   *
+   * @return a Date read from the given string
    * @see dateFormats
-   **/
-  static java.util.Date parseDate( String strDate ) throws ParseException {
+   */
+  static java.util.Date parseDate(String strDate) throws ParseException {
     if (Pattern.matches("^[0-9][0-9]?/[0-9][0-9]?$", date)) {
       @SuppressWarnings("deprecation") // for iCal4j
       int year = new Date().getYear() + 1900;
@@ -505,9 +510,9 @@ public class ICalAvailable {
     for (DateFormat this_df : dateFormats) {
       this_df.setLenient(false);
       try {
-        java.util.Date result = this_df.parse( strDate );
+        java.util.Date result = this_df.parse(strDate);
         return result;
-      } catch ( ParseException e ) {
+      } catch (ParseException e) {
         // Try the next format in the list.
       }
     }
@@ -521,8 +526,7 @@ public class ICalAvailable {
     // Remove trailing year, such as ", 1952".
     // result = result.substring(0, result.length() - 6);
     // Prepend day of week.
-    result = dffull.format(d).substring(0,3) + " " + result;
+    result = dffull.format(d).substring(0, 3) + " " + result;
     return result;
   }
-
 }

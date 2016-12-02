@@ -1,7 +1,14 @@
 package plume;
 
-import java.io.*;
-import java.util.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.util.Timer;
+import java.util.TimerTask;
 import org.apache.commons.io.IOUtils;
 
 /*>>>
@@ -10,35 +17,27 @@ import org.checkerframework.checker.nullness.qual.*;
 */
 
 /**
- * TimeLimitProcess is a subclass of Process such that the process is
- * killed if it runs for more than the specified number of milliseconds.
- * Wall clock seconds, not CPU seconds, are measured.
- * The process should already be started when TimeLimitProcess is invoked.
- * Typical use:
+ * TimeLimitProcess is a subclass of Process such that the process is killed if it runs for more
+ * than the specified number of milliseconds. Wall clock seconds, not CPU seconds, are measured. The
+ * process should already be started when TimeLimitProcess is invoked. Typical use:
+ *
  * <pre>
  *   ProcessBuilder pb = ...;
  *   TimeLimitProcess p = new TimeLimitProcess(pb.start(), TIMEOUT_SEC * 1000);</pre>
  *
- * <b>Note</b>: If a Java process is destroyed (e.g., because it times
- * out), then its output is unreadable:  Java code trying to read its
- * output stream fails.  Here are two ways to get around this problem:
+ * <b>Note</b>: If a Java process is destroyed (e.g., because it times out), then its output is
+ * unreadable: Java code trying to read its output stream fails. Here are two ways to get around
+ * this problem:
  *
  * <ul>
- * <li>
- * The client of TimeLimitProcess can send the process output to a file (or
- * ByteArrayOutputStream, etc.), which can be read after the process
- * terminates.  This is easy to do in Java 7, for example via
- * ProcessBuilder.redirectOutput(tempFile).  There does not appear to be an
- * easy way to do it in Java 6.
- * </li>
- * <li>
- * This class provides a workaround, in which it busy-waits reading the
- * standard and error outputs and stores them away.  Use
- * ...
- * </li>
+ *   <li> The client of TimeLimitProcess can send the process output to a file (or
+ *       ByteArrayOutputStream, etc.), which can be read after the process terminates. This is easy
+ *       to do in Java 7, for example via ProcessBuilder.redirectOutput(tempFile). There does not
+ *       appear to be an easy way to do it in Java 6.
+ *   <li> This class provides a workaround, in which it busy-waits reading the standard and error
+ *       outputs and stores them away. Use ...
  * </ul>
- **/
-
+ */
 public class TimeLimitProcess extends Process {
 
   private Process p;
@@ -53,36 +52,37 @@ public class TimeLimitProcess extends Process {
   private static boolean debug = false;
 
   /**
-   * Creates a TimeLimitProcess with the given time limit, in wall clock
-   * milliseconds.
+   * Creates a TimeLimitProcess with the given time limit, in wall clock milliseconds.
+   *
    * @param p non-null Process to limit the execution of
    * @param timeLimit in milliseconds
-   **/
-  public TimeLimitProcess (Process p, long timeLimit) {
+   */
+  public TimeLimitProcess(Process p, long timeLimit) {
     this(p, timeLimit, false);
   }
 
   /**
-   * Creates a TimeLimitProcess with the given time limit, in wall clock
-   * milliseconds.
+   * Creates a TimeLimitProcess with the given time limit, in wall clock milliseconds.
+   *
    * @param p non-null Process to limit the execution of
    * @param timeLimit in milliseconds
-   * @param cacheStdout
-   * If true, causes the TimeLimitProcess to consume the standard output of the
-   * underlying process, and to cache it.  After the process terminates (on
-   * its own or by being timed out), the output is available via the
-   * cached_stdout method.  This is necessary because when a Java process
-   * is terminated, its standard output is no longer available.
+   * @param cacheStdout If true, causes the TimeLimitProcess to consume the standard output of the
+   *     underlying process, and to cache it. After the process terminates (on its own or by being
+   *     timed out), the output is available via the cached_stdout method. This is necessary because
+   *     when a Java process is terminated, its standard output is no longer available.
    */
-  public TimeLimitProcess (Process p, long timeLimit, boolean cacheStdout) {
+  public TimeLimitProcess(Process p, long timeLimit, boolean cacheStdout) {
     this.p = p;
     timer = new Timer(true);
     this.timeLimit = timeLimit;
     if (debug) {
-      System.out.printf("new timelimit process, timeLimit=%s, cacheStdout=%s%n",
-                        timeLimit, cacheStdout);
+      System.out.printf(
+          "new timelimit process, timeLimit=%s, cacheStdout=%s%n", timeLimit, cacheStdout);
     }
-    @SuppressWarnings({"rawness","initialization"}) // tptt won't do anything with this until this is fully initialized; can FBC avoid the @SuppressWarnings?
+    @SuppressWarnings({
+      "rawness",
+      "initialization"
+    }) // tptt won't do anything with this until this is fully initialized; can FBC avoid the @SuppressWarnings?
     /*@Initialized*/ TPTimerTask tptt = new TPTimerTask(this, timeLimit);
     timer.schedule(tptt, timeLimit);
     if (cacheStdout) {
@@ -91,12 +91,12 @@ public class TimeLimitProcess extends Process {
       new StdoutStreamReaderThread().start();
       new StderrStreamReaderThread().start();
     }
-
   }
 
   /**
-   * Returns true if the process has timed out (has run for more than the
-   * timeLimit msecs specified in the constructor).
+   * Returns true if the process has timed out (has run for more than the timeLimit msecs specified
+   * in the constructor).
+   *
    * @return true iff the process has timed out
    */
   public boolean timed_out() {
@@ -105,6 +105,7 @@ public class TimeLimitProcess extends Process {
 
   /**
    * Return the timeout time in msecs.
+   *
    * @return the timeout time in msecs
    */
   public long timeout_msecs() {
@@ -123,17 +124,18 @@ public class TimeLimitProcess extends Process {
   //   return cached_stdout.toString();
   // }
 
-
   /**
    * Kills the subprocess.
+   *
    * @see Process#destroy()
-   **/
+   */
   public void destroy() {
     p.destroy();
   }
 
   /**
    * Return the exit value for the subprocess.
+   *
    * @return the exit value for the subprocess
    * @see Process#getErrorStream()
    */
@@ -149,6 +151,8 @@ public class TimeLimitProcess extends Process {
 
   /**
    * Gets the error stream connected to the error output of the subprocess.
+   *
+   * @return the error stream
    * @see Process#getErrorStream()
    */
   public InputStream getErrorStream() {
@@ -170,6 +174,8 @@ public class TimeLimitProcess extends Process {
 
   /**
    * Gets an input stream connected to the output of the subprocess.
+   *
+   * @return the input stream
    * @see Process#getInputStream()
    */
   public InputStream getInputStream() {
@@ -192,9 +198,10 @@ public class TimeLimitProcess extends Process {
     }
   }
 
-
   /**
    * Gets the output stream connected to the input of the subprocess.
+   *
+   * @return the output stream
    * @see Process#getOutputStream()
    */
   @SuppressWarnings("nullness") // non-null because we didn't redirect the output stream
@@ -203,17 +210,18 @@ public class TimeLimitProcess extends Process {
   }
 
   /**
-   * Causes the current thread to wait, if necessary, until the process represented by this Process object has terminated.
+   * Causes the current thread to wait, if necessary, until the process represented by this Process
+   * object has terminated.
+   *
+   * @return the exit value of the subprocess
    * @see Process#waitFor()
    */
   public int waitFor() throws InterruptedException {
     return p.waitFor();
   }
 
-  /**
-   * @return true if the process if finished, false otherwise
-   **/
-  public boolean finished () {
+  /** @return true if the process if finished, false otherwise */
+  public boolean finished() {
     try {
       // Process.exitValue() throws an exception if the process is not
       // finished.
@@ -224,16 +232,16 @@ public class TimeLimitProcess extends Process {
     }
   }
 
-  /**
-   * This TimerTask destroys the process that is passed to it.
-   **/
+  /** This TimerTask destroys the process that is passed to it. */
   private static class TPTimerTask extends TimerTask {
     TimeLimitProcess tp;
     long timeLimit;
+
     public TPTimerTask(TimeLimitProcess tp, long timeLimit) {
       this.tp = tp;
       this.timeLimit = timeLimit;
     }
+
     public void run() {
       // If exitValue is queried while the process is still running,
       // the IllegalThreadStateException will be thrown.  If that
@@ -250,8 +258,8 @@ public class TimeLimitProcess extends Process {
         tp.p.destroy();
         tp.timed_out = true;
         if (debug) {
-          System.out.println("Terminated process after timelimit of "
-                             + timeLimit + " msecs expired");
+          System.out.println(
+              "Terminated process after timelimit of " + timeLimit + " msecs expired");
           System.out.println();
         }
       }
@@ -263,13 +271,14 @@ public class TimeLimitProcess extends Process {
   // attempt failed.
 
   private class StdoutStreamReaderThread extends Thread {
-    @SuppressWarnings("nullness") // checker bug: NonNullOnEntry cannot access a variable in an enclosing class
+    @SuppressWarnings(
+        "nullness") // checker bug: NonNullOnEntry cannot access a variable in an enclosing class
     /*@RequiresNonNull("cached_stdout")*/
     public void run() {
       // This thread will block as the process produces output.  That's OK,
       // because the blocking is happening in a separate thread.
       try {
-        IOUtils.copy(p.getInputStream(), cached_stdout);
+        IOUtils.copy(p.getInputStream(), cached_stdout, Charset.defaultCharset());
       } catch (IOException e) {
         // assume the best
       }
@@ -277,17 +286,17 @@ public class TimeLimitProcess extends Process {
   }
 
   private class StderrStreamReaderThread extends Thread {
-    @SuppressWarnings("nullness") // checker bug: NonNullOnEntry cannot access a variable in an enclosing class
+    @SuppressWarnings(
+        "nullness") // checker bug: NonNullOnEntry cannot access a variable in an enclosing class
     /*@RequiresNonNull("cached_stderr")*/
     public void run() {
       // This thread will block as the process produces output.  That's OK,
       // because the blocking is happening in a separate thread.
       try {
-        IOUtils.copy(p.getErrorStream(), cached_stderr);
+        IOUtils.copy(p.getErrorStream(), cached_stderr, Charset.defaultCharset());
       } catch (IOException e) {
         // assume the best
       }
     }
   }
-
 }

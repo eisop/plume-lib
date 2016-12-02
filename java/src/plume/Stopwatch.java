@@ -7,16 +7,13 @@ import org.checkerframework.checker.initialization.qual.*;
 import org.checkerframework.checker.nullness.qual.*;
 */
 
-
-/**
- * A simple class for recording elapsed time.
- */
+/** A simple class for recording elapsed time. */
 public final class Stopwatch {
 
   long elapsedMillis = 0;
   long startTime = 0;
 
-  /** When created, the stopwatch is running by default. **/
+  /** When created, the stopwatch is running by default. */
   public Stopwatch() {
     this(true);
   }
@@ -66,7 +63,7 @@ public final class Stopwatch {
     return elapsedMillis / 1000.0;
   }
 
-  private static DecimalFormat[] timeFormat = {
+  private static final DecimalFormat[] timeFormat = {
     new DecimalFormat("#.#"),
     new DecimalFormat("#.#"),
     new DecimalFormat("#.#"),
@@ -75,9 +72,9 @@ public final class Stopwatch {
   };
 
   /**
-   * Stops the watch, calculates the elapsed time, restarts the watch,
-   * and returns the elapsed time.
-   * @return String representing elapsed time
+   * Stops the watch, calculates the elapsed time, restarts the watch, and returns the elapsed time.
+   *
+   * @return a String representing the elapsed time
    */
   public String stop_start() {
     stop();
@@ -97,5 +94,4 @@ public final class Stopwatch {
     }
     return Stopwatch.timeFormat[digits].format(runningMillis / 1000.0) + "s";
   }
-
 }

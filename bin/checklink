@@ -1,7 +1,12 @@
-#!/usr/bin/perl -wT
+#!/usr/bin/env perl
 
-eval 'exec /usr/bin/perl -wT -S $0 ${1+"$@"}'
+eval 'exec /usr/bin/perl -T -S $0 ${1+"$@"}'
     if 0; # not running under some shell
+
+## Run under taint mode
+# warn 'Taint mode is '.(${^TAINT} ? 'on' : 'off'); # For debugging
+exec($^X,'-T',$0,@ARGV) unless ${^TAINT};
+
 #
 # W3C Link Checker
 # by Hugo Haas <hugo@w3.org>
@@ -26,6 +31,7 @@ eval 'exec /usr/bin/perl -wT -S $0 ${1+"$@"}'
 #       www-validator@w3.org (with 'checklink' in the subject)
 #       http://lists.w3.org/Archives/Public/www-validator/ (archives)
 
+use warnings;
 use strict;
 use 5.008;
 use English;
@@ -44,6 +50,8 @@ use lib map { /(.*)/ }
                               ();
 
 # -----------------------------------------------------------------------------
+
+use File::Spec;
 
 package W3C::UserAgent;
 
@@ -1159,9 +1167,9 @@ EOF
 <div class="settings">
 Settings used:
  <ul>
-  <li><tt><a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1">Accept</a></tt>: %s</li>
-  <li><tt><a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4">Accept-Language</a></tt>: %s</li>
-  <li><tt><a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.36">Referer</a></tt>: %s</li>
+  <li><code><a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1">Accept</a></code>: %s</li>
+  <li><code><a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4">Accept-Language</a></code>: %s</li>
+  <li><code><a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.36">Referer</a></code>: %s</li>
   <li>Sleeping %d second%s between requests to each server</li>
  </ul>
 </div>
@@ -1253,20 +1261,20 @@ EOF
             }
         }
 # These next three ifs are to work around a performance issue.
-# The www.w3.org web site can be extreamly slow to respond; so
+# The www.w3.org web site can be extremely slow to respond; so
 # we redirect to local copies of the files.
 
         if ($abs_link_uri eq "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd") {
-          $abs_link_uri = URI->new("file://" . dirname(__FILE__) . "/../etc/xhtml1-transitional.dtd");
+          $abs_link_uri = URI->new("file://" . dirname(File::Spec->rel2abs( __FILE__ )) . "/../etc/xhtml1-transitional.dtd");
         }
         if ($abs_link_uri eq "http://www.w3.org/TR/html4/frameset.dtd") {
-          $abs_link_uri = URI->new("file://" . dirname(__FILE__) . "/../etc/frameset.dtd");
+          $abs_link_uri = URI->new("file://" . dirname(File::Spec->rel2abs( __FILE__ )) . "/../etc/frameset.dtd");
         }
         if ($abs_link_uri eq "http://www.w3.org/TR/html4/loose.dtd") {
-          $abs_link_uri = URI->new("file://" . dirname(__FILE__) . "/../etc/loose.dtd");
+          $abs_link_uri = URI->new("file://" . dirname(File::Spec->rel2abs( __FILE__ )) . "/../etc/loose.dtd");
         }
         if ($abs_link_uri eq "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd") {
-          $abs_link_uri = URI->new("file://" . dirname(__FILE__) . "/../etc/xhtml-rdfa-1.dtd");
+          $abs_link_uri = URI->new("file://" . dirname(File::Spec->rel2abs( __FILE__ )) . "/../etc/xhtml-rdfa-1.dtd");
         }
         # printf("FILE %s \n", $abs_link_uri);
 
@@ -1333,7 +1341,8 @@ EOF
                 # my $is_suppressed_fragment = grep { $_ eq "$u#$fragment" } @{$Opts{Suppress_Fragment}};
 
                 # Debugging of the below
-                if (! exists $results{$u}{fragments}{$fragment}) {
+                if ((! exists $results{$u}{fragments}{$fragment})
+                    && (! is_pdf_page_fragment($u, $fragment))) {
                     # printf("Exists \$results{%s}: %s\n", $u, exists $results{$u});
                     # printf("Exists \$results{%s}{fragments}: %s\n", $u, exists $results{$u}{fragments});
                     # printf("Exists \$results{%s}{fragments}{%s}: %s\n", $u, $fragment, exists $results{$u}{fragments}{$fragment});
@@ -1350,11 +1359,12 @@ EOF
                         (scalar(@line_nums) > 1) ? 's' : '',
                         join(', ', @line_nums)
                     );
-                    # print "is_suppressed_fragment for $u#$fragment: $grep_result\n";
+                    # print "is_suppressed_fragment for $u#$fragment: $is_suppressed_fragment\n";
                 }
 
                 # A broken fragment?
-                if ($results{$u}{fragments}{$fragment} == 0) {
+                if (exists $results{$u}{fragments}{$fragment}
+                    && $results{$u}{fragments}{$fragment} == 0) {
                     $broken{$u}{fragments}{$fragment} += 2;
                 }
             }
@@ -2277,10 +2287,11 @@ sub check_validity ($$$\%\%)
     }
 
     # Check that the fragments exist
-    foreach my $fragment (keys %{$links->{$uri}{fragments}}) {
+    foreach my $fragment (sort keys %{$links->{$uri}{fragments}}) {
         if (defined($p->{Anchors}{$fragment}) ||
             &escape_match($fragment, $p->{Anchors}) ||
-            grep { $_ eq "$uri#$fragment" } @{$Opts{Suppress_Fragment}})
+            (grep { $_ eq "$uri#$fragment" } @{$Opts{Suppress_Fragment}}) ||
+            is_pdf_page_fragment($uri, $fragment))
         {
             $results{$uri}{fragments}{$fragment} = 1;
         }
@@ -2289,6 +2300,12 @@ sub check_validity ($$$\%\%)
         }
     }
     return;
+}
+
+sub is_pdf_page_fragment ($$)
+{
+    my ($uri, $fragment) = @_;
+    return ($uri =~ /\.pdf$/ && $fragment =~ /^page=[0-9]+$/);
 }
 
 sub escape_match ($\%)
@@ -2396,14 +2413,16 @@ sub record_redirects (\%$)
         my $from = $prev->request()->url();
         my $to   = $response->request()->url();  # same on every loop iteration
         my $from_to = $from . '->' . $to;
+        # print STDERR "Redirect discovered: $from_to\n";
         my $match = grep { $_ eq $from_to } @{$Opts{Suppress_Redirect}};
 
-        # print STDERR "Result $match of redirect checking $from_to\n";
+        # print STDERR "Result $match of redirect checking\n";
+        # print STDERR "Redirect checking was against: @{$Opts{Suppress_Redirect}}\n";
         if ($match) { next; }
 
         $match = grep { $from_to =~ /$_/ } @{$Opts{Suppress_Redirect_Prefix}};
 
-        # print STDERR "Result $match of regexp checking $from_to\n";
+        # print STDERR "Result $match of redirect prefix checking\n";
         if ($match) { next; }
 
         my $c = $prev->code();
@@ -3249,11 +3268,11 @@ of a document that you would like to check:</label></p>
     <br />
     <label for=\"no_accept_language_$check_num\"><input type=\"checkbox\" id=\"no_accept_language_$check_num\" name=\"no_accept_language\" value=\"on\"",
         $acc,
-        " /> Don't send the <tt><a href=\"http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4\">Accept-Language</a></tt> header</label>
+        " /> Don't send the <code><a href=\"http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4\">Accept-Language</a></code> header</label>
     <br />
     <label for=\"no_referer_$check_num\"><input type=\"checkbox\" id=\"no_referer_$check_num\" name=\"no_referer\" value=\"on\"",
         $ref,
-        " /> Don't send the <tt><a href=\"http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.36\">Referer</a></tt> header</label>
+        " /> Don't send the <code><a href=\"http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.36\">Referer</a></code> header</label>
     <br />
     <label title=\"Check linked documents recursively (maximum: ",
         $Opts{Max_Documents},

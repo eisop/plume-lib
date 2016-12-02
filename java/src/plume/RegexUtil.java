@@ -1,40 +1,46 @@
+// This class should be kept in sync with checkers.regex.RegexUtil.
+
 package plume;
 
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 /*>>>
+import org.checkerframework.checker.lock.qual.*;
 import org.checkerframework.checker.nullness.qual.*;
 import org.checkerframework.checker.regex.qual.*;
 import org.checkerframework.dataflow.qual.*;
 import org.checkerframework.framework.qual.EnsuresQualifierIf;
 */
 
-// This class should be kept in sync with checkers.regex.RegexUtil .
-
 /**
- * Utility methods for regular expressions, most notably for testing whether
- * a string is a regular expression.
- * <p>
+ * Utility methods for regular expressions, most notably for testing whether a string is a regular
+ * expression.
  *
- * For an example of intended use, see section <a
- * href="http://types.cs.washington.edu/checker-framework/current/checkers-manual.html#regexutil-methods">Testing
- * whether a string is a regular expression</a> in the Checker Framework
- * manual.
+ * <p>For an example of intended use, see section <a
+ * href="http://types.cs.washington.edu/checker-framework/current/checker-framework-manual.html#regexutil-methods">Testing
+ * whether a string is a regular expression</a> in the Checker Framework manual.
  */
-public class RegexUtil {
+// The Purity Checker cannot show for most methods in this class that
+// they are pure, even though they are.
+@SuppressWarnings("purity")
+public final class RegexUtil {
+
+  /** This class is a collection of methods; it does not represent anything. */
+  private RegexUtil() {
+    throw new Error("do not instantiate");
+  }
 
   /**
    * A checked version of {@link PatternSyntaxException}.
-   * <p>
-   * This exception is useful when an illegal regex is detected but the
-   * contextual information to report a helpful error message is not available
-   * at the current depth in the call stack. By using a checked
-   * PatternSyntaxException the error must be handled up the call stack where
-   * a better error message can be reported.
-   * <p>
    *
-   * Typical usage is:
+   * <p>This exception is useful when an illegal regex is detected but the contextual information to
+   * report a helpful error message is not available at the current depth in the call stack. By
+   * using a checked PatternSyntaxException the error must be handled up the call stack where a
+   * better error message can be reported.
+   *
+   * <p>Typical usage is:
+   *
    * <pre>
    * void myMethod(...) throws CheckedPatternSyntaxException {
    *   ...
@@ -44,14 +50,13 @@ public class RegexUtil {
    *   ... Pattern.compile(myString) ...
    * </pre>
    *
-   * Simply calling <tt>Pattern.compile</tt> would have a similar effect,
-   * in that <tt>PatternSyntaxException</tt> would be thrown at run time if
-   * <tt>myString</tt> is not a regular expression.  There are two problems
-   * with such an approach.  First, a client of <tt>myMethod</tt> might
-   * forget to handle the exception, since <tt>PatternSyntaxException</tt>
-   * is not checked.  Also, the Regex Checker would issue a warning about
-   * the call to <tt>Pattern.compile</tt> that might throw an exception.
-   * The above usage pattern avoids both problems.
+   * Simply calling <code>Pattern.compile</code> would have a similar effect, in that <code>
+   * PatternSyntaxException</code> would be thrown at run time if <code>myString</code> is not a
+   * regular expression. There are two problems with such an approach. First, a client of <code>
+   * myMethod</code> might forget to handle the exception, since <code>PatternSyntaxException</code>
+   * is not checked. Also, the Regex Checker would issue a warning about the call to <code>
+   * Pattern.compile</code> that might throw an exception. The above usage pattern avoids both
+   * problems.
    *
    * @see PatternSyntaxException
    */
@@ -59,14 +64,15 @@ public class RegexUtil {
 
     private static final long serialVersionUID = 6266881831979001480L;
 
+    /** The PatternSyntaxException that this is a wrapper around. */
     private final PatternSyntaxException pse;
 
     /**
-     * Constructs a new CheckedPatternSyntaxException equivalent to the
-     * given {@link PatternSyntaxException}.
-     * <p>
-     * Consider calling this constructor with the result of
-     * {@link RegexUtil#regexError}.
+     * Constructs a new CheckedPatternSyntaxException equivalent to the given {@link
+     * PatternSyntaxException}.
+     *
+     * <p>Consider calling this constructor with the result of {@link RegexUtil#regexError}.
+     *
      * @param pse the PatternSyntaxException to be wrapped
      */
     public CheckedPatternSyntaxException(PatternSyntaxException pse) {
@@ -76,10 +82,10 @@ public class RegexUtil {
     /**
      * Constructs a new CheckedPatternSyntaxException.
      *
-     * @param desc A description of the error
-     * @param regex The erroneous pattern
-     * @param index The approximate index in the pattern of the error,
-     *              or {@code -1} if the index is not known
+     * @param desc a description of the error
+     * @param regex the erroneous pattern
+     * @param index the approximate index in the pattern of the error, or {@code -1} if the index is
+     *     not known
      */
     public CheckedPatternSyntaxException(String desc, String regex, int index) {
       this(new PatternSyntaxException(desc, regex, index));
@@ -88,7 +94,7 @@ public class RegexUtil {
     /**
      * Retrieves the description of the error.
      *
-     * @return The description of the error
+     * @return the description of the error
      */
     public String getDescription() {
       return pse.getDescription();
@@ -97,62 +103,61 @@ public class RegexUtil {
     /**
      * Retrieves the error index.
      *
-     * @return The approximate index in the pattern of the error, or {@code -1}
-     *         if the index is not known
+     * @return the approximate index in the pattern of the error, or {@code -1} if the index is not
+     *     known
      */
     public int getIndex() {
       return pse.getIndex();
     }
 
     /**
-     * Returns a multi-line string containing the description of the syntax
-     * error and its index, the erroneous regular-expression pattern, and a
-     * visual indication of the error index within the pattern.
+     * Returns a multi-line string containing the description of the syntax error and its index, the
+     * erroneous regular-expression pattern, and a visual indication of the error index within the
+     * pattern.
      *
-     * @return The full detail message
+     * @return the full detail message
      */
+    @Override
     /*@Pure*/
-    public String getMessage() {
+    public String getMessage(/*>>>@GuardSatisfied CheckedPatternSyntaxException this*/) {
       return pse.getMessage();
     }
 
     /**
      * Retrieves the erroneous regular-expression pattern.
      *
-     * @return The erroneous pattern
+     * @return the erroneous pattern
      */
     public String getPattern() {
       return pse.getPattern();
     }
   }
 
-  private RegexUtil() {
-    throw new AssertionError("Class RegexUtil shouldn't be instantiated");
-  }
-
   /**
-   * Returns true if the argument is a syntactically valid regular
-   * expression.
+   * Returns true if the argument is a syntactically valid regular expression.
+   *
    * @param s string to check for being a regular expression
    * @return true iff s is a regular expression
    */
+  /*@Pure*/
   /*@EnsuresQualifierIf(result=true, expression="#1", qualifier=Regex.class)*/
-  /*@Pure*/ public static boolean isRegex(final String s) {
+  public static boolean isRegex(String s) {
     return isRegex(s, 0);
   }
 
   /**
-   * Returns true if the argument is a syntactically valid regular
-   * expression with at least the given number of groups.
+   * Returns true if the argument is a syntactically valid regular expression with at least the
+   * given number of groups.
+   *
    * @param s string to check for being a regular expression
    * @param groups number of groups expected
    * @return true iff s is a regular expression with groups groups
    */
-  /*>>>
-  @SuppressWarnings({"regex","deterministic"})    // RegexUtil; for purity, catches an exception
-  @Pure
-  @EnsuresQualifierIf(result=true, expression="#1", qualifier=Regex.class)
-  */
+  @SuppressWarnings({"regex", "deterministic"}) // RegexUtil; for purity, catches an exception
+  /*@Pure*/
+  // @EnsuresQualifierIf annotation is extraneous because this method is special-cased
+  // in RegexTransfer.
+  /*@EnsuresQualifierIf(result=true, expression="#1", qualifier=Regex.class)*/
   public static boolean isRegex(String s, int groups) {
     Pattern p;
     try {
@@ -164,46 +169,43 @@ public class RegexUtil {
   }
 
   /**
-   * Returns true if the argument is a syntactically valid regular
-   * expression.
+   * Returns true if the argument is a syntactically valid regular expression.
+   *
    * @param c char to check for being a regular expression
    * @return true iff c is a regular expression
    */
-  /*>>>
-  @SuppressWarnings({"regex", "purity.not.deterministic.call"})    // RegexUtil; temp value used in pure method is equal up to equals but not up to ==
-  @Pure
-  @EnsuresQualifierIf(result=true, expression="#1", qualifier=Regex.class)
-  */
+  @SuppressWarnings({
+    "regex",
+    "purity.not.deterministic.call"
+  }) // RegexUtil; temp value used in pure method is equal up to equals but not up to ==
+  /*@Pure*/
+  /*@EnsuresQualifierIf(result=true, expression="#1", qualifier=Regex.class)*/
   public static boolean isRegex(char c) {
     return isRegex(Character.toString(c));
   }
 
   /**
-   * Returns null if the argument is a syntactically valid regular
-   * expression. Otherwise returns a string describing why the argument is
-   * not a regex.
+   * Returns null if the argument is a syntactically valid regular expression. Otherwise returns a
+   * string describing why the argument is not a regex.
+   *
    * @param s string to check for being a regular expression
-   * @return null, or a string describing why the argument is not a regex.
+   * @return null, or a string describing why the argument is not a regex
    */
-  /*>>>
-  @SuppressWarnings("regex")    // RegexUtil
-  @SideEffectFree
-  */
+  @SuppressWarnings("regex") // RegexUtil
+  /*@SideEffectFree*/
   public static /*@Nullable*/ String regexError(String s) {
     return regexError(s, 0);
   }
 
   /**
-   * Returns null if the argument is a syntactically valid regular
-   * expression with at least the given number of groups. Otherwise returns
-   * a string describing why the argument is not a regex.
+   * Returns null if the argument is a syntactically valid regular expression with at least the
+   * given number of groups. Otherwise returns a string describing why the argument is not a regex.
+   *
    * @param s string to check for being a regular expression
    * @param groups number of groups expected
-   * @return null, or a string describing why the argument is not a regex.
+   * @return null, or a string describing why the argument is not a regex
    */
-  /*>>>
-  @SuppressWarnings({"regex","not.sef"})    // RegexUtil;
-  */
+  @SuppressWarnings({"regex", "not.sef"}) // RegexUtil;
   /*@SideEffectFree*/
   public static /*@Nullable*/ String regexError(String s, int groups) {
     try {
@@ -219,32 +221,29 @@ public class RegexUtil {
   }
 
   /**
-   * Returns null if the argument is a syntactically valid regular
-   * expression. Otherwise returns a PatternSyntaxException describing
-   * why the argument is not a regex.
+   * Returns null if the argument is a syntactically valid regular expression. Otherwise returns a
+   * PatternSyntaxException describing why the argument is not a regex.
+   *
    * @param s string to check for being a regular expression
-   * @return null, or a PatternSyntaxException describing why the argument is not a regex.
+   * @return null, or a PatternSyntaxException describing why the argument is not a regex
    */
-  /*>>>
-  @SuppressWarnings("regex")    // RegexUtil
-  @SideEffectFree
-  */
+  @SuppressWarnings("regex") // RegexUtil
+  /*@SideEffectFree*/
   public static /*@Nullable*/ PatternSyntaxException regexException(String s) {
     return regexException(s, 0);
   }
 
   /**
-   * Returns null if the argument is a syntactically valid regular
-   * expression with at least the given number of groups. Otherwise returns a
-   * PatternSyntaxException describing why the argument is not a regex.
+   * Returns null if the argument is a syntactically valid regular expression with at least the
+   * given number of groups. Otherwise returns a PatternSyntaxException describing why the argument
+   * is not a regex.
+   *
    * @param s string to check for being a regular expression
    * @param groups number of groups expected
-   * @return null, or a PatternSyntaxException describing why the argument is not a regex.
+   * @return null, or a PatternSyntaxException describing why the argument is not a regex
    */
-  /*>>>
-  @SuppressWarnings("regex")    // RegexUtil
-  @SideEffectFree
-  */
+  @SuppressWarnings("regex") // RegexUtil
+  /*@SideEffectFree*/
   public static /*@Nullable*/ PatternSyntaxException regexException(String s, int groups) {
     try {
       Pattern p = Pattern.compile(s);
@@ -259,32 +258,34 @@ public class RegexUtil {
   }
 
   /**
-   * Returns the argument as a {@code @Regex String} if it is a regex,
-   * otherwise throws an error. The purpose of this method is to suppress Regex
-   * Checker warnings. It should be very rarely needed.
+   * Returns the argument as a {@code @Regex String} if it is a regex, otherwise throws an error.
+   * The purpose of this method is to suppress Regex Checker warnings. It should be very rarely
+   * needed.
+   *
    * @param s string to check for being a regular expression
    * @return its argument
    * @throws Error if argument is not a regex
    */
   /*@SideEffectFree*/
+  // The return type annotation is a conservative bound.
   public static /*@Regex*/ String asRegex(String s) {
     return asRegex(s, 0);
   }
 
   /**
-   * Returns the argument as a {@code @Regex(groups) String} if it is a regex
-   * with at least the given number of groups, otherwise throws an error. The
-   * purpose of this method is to suppress Regex Checker warnings. It should
-   * be very rarely needed.
+   * Returns the argument as a {@code @Regex(groups) String} if it is a regex with at least the
+   * given number of groups, otherwise throws an error. The purpose of this method is to suppress
+   * Regex Checker warnings. It should be very rarely needed.
+   *
    * @param s string to check for being a regular expression
    * @param groups number of groups expected
    * @return its argument
    * @throws Error if argument is not a regex
    */
-  /*>>>
-  @SuppressWarnings("regex")    // RegexUtil
-  @SideEffectFree
-  */
+  @SuppressWarnings("regex") // RegexUtil
+  /*@SideEffectFree*/
+  // The return type annotation is irrelevant; it is special-cased by
+  // RegexAnnotatedTypeFactory.
   public static /*@Regex*/ String asRegex(String s, int groups) {
     try {
       Pattern p = Pattern.compile(s);
@@ -299,24 +300,30 @@ public class RegexUtil {
   }
 
   /**
-   * Generates an error message for s when expectedGroups are needed, but s
-   * only has actualGroups.
+   * Generates an error message for s when expectedGroups are needed, but s only has actualGroups.
+   *
    * @param s string to check for being a regular expression
-   * @return an error message for s when expectedGroups groups are needed, but s
-   * only has actualGroups groups
+   * @return an error message for s when expectedGroups groups are needed, but s only has
+   *     actualGroups groups
    */
   /*@SideEffectFree*/
   private static String regexErrorMessage(String s, int expectedGroups, int actualGroups) {
-    return "regex \"" + s + "\" has " + actualGroups + " groups, but " +
-        expectedGroups + " groups are needed.";
+    return "regex \""
+        + s
+        + "\" has "
+        + actualGroups
+        + " groups, but "
+        + expectedGroups
+        + " groups are needed.";
   }
 
   /**
    * Return the count of groups in the argument.
+   *
    * @param p pattern whose groups to count
    * @return the count of groups in the argument
    */
-  /*@SuppressWarnings("purity")*/     // does not depend on object identity
+  @SuppressWarnings("purity") // does not depend on object identity
   /*@Pure*/
   private static int getGroupCount(Pattern p) {
     return p.matcher("").groupCount();

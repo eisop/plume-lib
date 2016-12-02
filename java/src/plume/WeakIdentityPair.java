@@ -3,31 +3,29 @@ package plume;
 import java.lang.ref.WeakReference;
 
 /*>>>
+import org.checkerframework.checker.lock.qual.*;
 import org.checkerframework.checker.nullness.qual.*;
 import org.checkerframework.dataflow.qual.*;
 */
 
-
 /**
- * Immutable pair class:
- * type-safely holds two objects of possibly-different types.
- * <p>
- * Differs from Pair in the following ways:  is immutable, cannot hold
- * null, holds its elements with weak pointers, and its equals() method
- * uses object equality to compare its elements.
- **/
-public class WeakIdentityPair<T1 extends Object,T2 extends Object> {
+ * Immutable pair class: type-safely holds two objects of possibly-different types.
+ *
+ * <p>Differs from Pair in the following ways: is immutable, cannot hold null, holds its elements
+ * with weak pointers, and its equals() method uses object equality to compare its elements.
+ */
+public class WeakIdentityPair<T1 extends Object, T2 extends Object> {
 
-  final private WeakReference<T1> a;
-  final private WeakReference<T2> b;
+  private final WeakReference<T1> a;
+  private final WeakReference<T2> b;
 
   // Must cache the hashCode to prevent it from changing.
-  final private int hashCode;
+  private final int hashCode;
 
   public WeakIdentityPair(T1 a, T2 b) {
     if (a == null || b == null) {
-      throw new IllegalArgumentException(String.format(
-              "WeakIdentityPair cannot hold null: %s %s", a, b));
+      throw new IllegalArgumentException(
+          String.format("WeakIdentityPair cannot hold null: %s %s", a, b));
     }
     this.a = new WeakReference<T1>(a);
     this.b = new WeakReference<T2>(b);
@@ -39,7 +37,9 @@ public class WeakIdentityPair<T1 extends Object,T2 extends Object> {
     hashCode = localHashCode;
   }
 
-  /** Factory method with short name and no need to name type parameters.
+  /**
+   * Factory method with short name and no need to name type parameters.
+   *
    * @param <A> type of first argument
    * @param <B> type of second argument
    * @param a first argument
@@ -50,29 +50,42 @@ public class WeakIdentityPair<T1 extends Object,T2 extends Object> {
     return new WeakIdentityPair<A, B>(a, b);
   }
 
-  /** Return the first element of the pair, or null if it has been garbage-collected.
+  /**
+   * Return the first element of the pair, or null if it has been garbage-collected.
+   *
    * @return the first element of the pail, or null if it has been garbage-collected
    */
-  /*@SideEffectFree*/ public /*@Nullable*/ T1 getA() {
+  /*@SideEffectFree*/
+  public /*@Nullable*/ T1 getA(/*>>>@GuardSatisfied WeakIdentityPair<T1,T2> this*/) {
     return a.get();
   }
 
-  /** Return the second element of the pair, or null if it has been garbage-collected.
+  /**
+   * Return the second element of the pair, or null if it has been garbage-collected.
+   *
    * @return the second element of the pair, or null if it has been garbage-collected
    */
-  /*@SideEffectFree*/ public /*@Nullable*/ T2 getB() {
+  /*@SideEffectFree*/
+  public /*@Nullable*/ T2 getB(/*>>>@GuardSatisfied WeakIdentityPair<T1,T2> this*/) {
     return b.get();
   }
 
   @Override
-  /*@SideEffectFree*/ public String toString() {
+  /*@SideEffectFree*/
+  public String toString(/*>>>@GuardSatisfied WeakIdentityPair<T1,T2> this*/) {
     return "<" + String.valueOf(a) + "," + String.valueOf(b) + ">";
   }
 
   @Override
-  @SuppressWarnings({"interning", "not.deterministic.call"}) // getA is not @deterministic, but its value is checked, so this method is deterministic
-  /*@Pure*/ public boolean equals(/*@Nullable*/ Object obj) {
-    if (! (obj instanceof WeakIdentityPair<?, ?>)) {
+  @SuppressWarnings({
+    "interning",
+    "not.deterministic.call"
+  }) // getA is not @deterministic, but its value is checked, so this method is deterministic
+  /*@Pure*/
+  public boolean equals(
+      /*>>>@GuardSatisfied WeakIdentityPair<T1,T2> this,*/
+      /*@GuardSatisfied*/ /*@Nullable*/ Object obj) {
+    if (!(obj instanceof WeakIdentityPair<?, ?>)) {
       return false;
     }
     // generics are not checked at run time!
@@ -94,11 +107,9 @@ public class WeakIdentityPair<T1 extends Object,T2 extends Object> {
     return a == oa && b == ob;
   }
 
-
   @Override
   /*@Pure*/
-  public int hashCode() {
+  public int hashCode(/*>>>@GuardSatisfied WeakIdentityPair<T1,T2> this*/) {
     return hashCode;
   }
-
 }

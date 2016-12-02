@@ -32,7 +32,7 @@
 
 package plume;
 
-import java.io.*;
+import java.io.File;
 import java.net.URL;
 import java.util.StringTokenizer;
 
@@ -40,38 +40,39 @@ import java.util.StringTokenizer;
 import org.checkerframework.checker.nullness.qual.*;
 */
 
-
 // PROBLEM:  The "java" binary places rt.jar at the front of the
 // bootclasspath, and this program will find a class there even if the
 // class appears at the beginning of the real classpath.
 
 /**
- * <code>JWhich</code> is a utility that takes a Java class name
- * and displays the absolute pathname of the class file that would
- * be loaded first by the class loader, as prescribed by the
- * class path.
- * <p>
- * <code>JWhich</code> also validates the class path and reports
- * any non-existent or invalid class path entries.
- * <p>
- * Usage is similar to the UNIX <code>which</code> command.
- * <p>
- * Example uses:
- * <blockquote>
- *    To find the absolute pathname of <code>MyClass.class</code>
- *    not in a package:
- *    <pre>java JWhich MyClass</pre>
+ * <code>JWhich</code> is a utility that takes a Java class name and displays the absolute pathname
+ * of the class file that would be loaded first by the class loader, as prescribed by the class
+ * path.
  *
- *    To find the absolute pathname of <code>MyClass.class</code>
- *    in the <code>my.package</code> package:
- *    <pre>java JWhich my.package.MyClass</pre>
+ * <p><code>JWhich</code> also validates the class path and reports any non-existent or invalid
+ * class path entries.
+ *
+ * <p>Usage is similar to the UNIX <code>which</code> command.
+ *
+ * <p>Example uses:
+ *
+ * <blockquote>
+ *
+ * To find the absolute pathname of <code>MyClass.class</code> not in a package:
+ *
+ * <pre>java JWhich MyClass</pre>
+ *
+ * To find the absolute pathname of <code>MyClass.class</code> in the <code>my.package</code>
+ * package:
+ *
+ * <pre>java JWhich my.package.MyClass</pre>
+ *
  * </blockquote>
  *
  * @author <a href="mailto:mike@clarkware.com">Mike Clark</a>
  * @author <a href="http://www.clarkware.com">Clarkware Consulting, Inc.</a>
  */
-
-public class JWhich {
+public final class JWhich {
 
   private static /*@MonotonicNonNull*/ String CLASSPATH;
 
@@ -82,11 +83,10 @@ public class JWhich {
   }
 
   /**
-   * Prints the absolute pathname of the class file
-   * containing the specified class name, as prescribed
-   * by the class path.
+   * Prints the absolute pathname of the class file containing the specified class name, as
+   * prescribed by the class path.
    *
-   * @param className Name of the class.
+   * @param className name of the class
    */
   /*@EnsuresNonNull("CLASSPATH")*/
   public static void which(String className) {
@@ -94,11 +94,9 @@ public class JWhich {
     URL classUrl = findClass(className);
 
     if (classUrl == null) {
-      System.out.println("\nClass '" + className +
-        "' not found.");
+      System.out.println("\nClass '" + className + "' not found.");
     } else {
-      System.out.println("\nClass '" + className +
-        "' found in \n'" + classUrl.getFile() + "'");
+      System.out.println("\nClass '" + className + "' found in \n'" + classUrl.getFile() + "'");
     }
 
     validate();
@@ -107,11 +105,11 @@ public class JWhich {
   }
 
   /**
-   * Returns the URL of the resource denoted by the specified
-   * class name, as prescribed by the class path.
+   * Returns the URL of the resource denoted by the specified class name, as prescribed by the class
+   * path.
    *
-   * @param className Name of the class.
-   * @return Class URL, or null of the class was not found.
+   * @param className name of the class
+   * @return class URL, or null of the class was not found
    */
   public static /*@Nullable*/ URL findClass(final String className) {
     return JWhich.class.getResource(asResourceName(className));
@@ -127,53 +125,61 @@ public class JWhich {
   }
 
   /**
-   * Validates the class path and reports any non-existent
-   * or invalid class path entries.
-   * <p>
-   * Valid class path entries include directories, <code>.zip</code>
-   * files, and <code>.jar</code> files.
+   * Validates the class path and reports any non-existent or invalid class path entries.
+   *
+   * <p>Valid class path entries include directories, <code>.zip</code> files, and <code>.jar</code>
+   * files.
    */
   /*@EnsuresNonNull("CLASSPATH")*/
   public static void validate() {
 
-    StringTokenizer tokenizer =
-      new StringTokenizer(getClasspath(), File.pathSeparator);
+    StringTokenizer tokenizer = new StringTokenizer(getClasspath(), File.pathSeparator);
 
     while (tokenizer.hasMoreTokens()) {
       String element = tokenizer.nextToken();
       File f = new File(element);
 
       if (!f.exists()) {
-        System.out.println("\nClasspath element '" +
-          element + "' " + "does not exist.");
-      } else if ( (!f.isDirectory()) &&
-            (!element.toLowerCase().endsWith(".jar")) &&
-            (!element.toLowerCase().endsWith(".zip")) ) {
+        System.out.println("\nClasspath element '" + element + "' does not exist.");
+      } else if ((!f.isDirectory())
+          && (!element.toLowerCase().endsWith(".jar"))
+          && (!element.toLowerCase().endsWith(".zip"))) {
 
-        System.out.println("\nClasspath element '" +
-          element + "' " +
-          "is not a directory, .jar file, or .zip file.");
-
+        System.out.println(
+            "\nClasspath element '"
+                + element
+                + "' "
+                + "is not a directory, .jar file, or .zip file.");
       }
     }
   }
 
+  /** Print the classpath to System.out. */
   /*@EnsuresNonNull("CLASSPATH")*/
   public static void printClasspath() {
 
     System.out.println("\nClasspath:");
-    StringTokenizer tokenizer =
-      new StringTokenizer(getClasspath(), File.pathSeparator);
+    StringTokenizer tokenizer = new StringTokenizer(getClasspath(), File.pathSeparator);
     while (tokenizer.hasMoreTokens()) {
       System.out.println(tokenizer.nextToken());
     }
   }
 
+  /**
+   * Set the classpath to the given string.
+   *
+   * @param classpath the new classpath
+   */
   /*@EnsuresNonNull("CLASSPATH")*/
   public static void setClasspath(String classpath) {
     CLASSPATH = classpath;
   }
 
+  /**
+   * Return the classpath.
+   *
+   * @return the classpath
+   */
   /*@EnsuresNonNull("CLASSPATH")*/
   protected static String getClasspath() {
     if (CLASSPATH == null) {
@@ -202,6 +208,7 @@ public class JWhich {
     }
   }
 
+  /** Print how to call the JWhich program. */
   private static void printUsage() {
 
     System.out.println("\nSyntax: java JWhich [options] className");

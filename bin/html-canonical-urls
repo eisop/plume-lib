@@ -25,6 +25,8 @@ Adam Kie&#0380;un http://people.csail.mit.edu/akiezun/
 # Adrian Birka http://web.mit.edu/adbirka/www/
 ## Alan had his webpages removed as of August 2014.
 # Alan Donovan http://people.csail.mit.edu/adonovan/
+Alberto Goffi http://www.people.usi.ch/goffia/
+Alessandra Gorla http://software.imdea.org/~alessandra.gorla/
 Alessandro Orso http://www.cc.gatech.edu/~orso/
 Alex Groce http://www-2.cs.cmu.edu/~agroce/
 Alex Potanin http://homepages.mcs.vuw.ac.nz/~alex/
@@ -38,9 +40,9 @@ Arvind Krishnamurthy http://www.cs.washington.edu/people/faculty/arvind/
 ASE 2003 http://ase.cs.uni-essen.de/ase/past/ase2003/index.htm
 ASE 2005 http://ase.cs.uni-essen.de/ase/past/ase2005/
 ASE 2006 http://ase.cs.uni-essen.de/ase/past/ase2006/
-# Broken as of 11/2013:
-# ASE 2007 http://www.cse.msu.edu/ase2007/
+# Broken as of 11/2013: ASE 2007 http://www.cse.msu.edu/ase2007/
 Barbara Ryder http://people.cs.vt.edu/~ryder/
+Ben Tribelhorn http://www.bentribelhorn.com/
 # Benjamin Morse http://web.mit.edu/scruffy/www/
 Bill Howe http://homes.cs.washington.edu/~billhowe/
 # Bjarne Steensgaard http://research.microsoft.com/~rusa/
@@ -48,13 +50,15 @@ Bjorn De Sutter http://syslab.elis.ugent.be/brdsutte/
 Brian Burg http://brrian.org/
 Brian Demsky http://demsky.eecs.uci.edu/
 # Brock Pytlik http://www.cs.brown.edu/people/bpytlik/
-Brown University http://www.brown.edu/
+Brown University https://www.brown.edu/
+Calvin Loncaric https://homes.cs.washington.edu/~loncaric/
 Carlos Pacheco http://people.csail.mit.edu/cpacheco/
+Chandrakana Nandi http://homes.cs.washington.edu/~cnandi/
 Christoph Csallner http://ranger.uta.edu/~csallner/
 Colin S. Gordon https://www.cs.drexel.edu/~csgordon/
 Craig Chambers http://homes.cs.washington.edu/~chambers/
-Craig Kaplan http://www.cgl.uwaterloo.ca/~csk/
-Craig S. Kaplan http://www.cgl.uwaterloo.ca/~csk/
+Craig Kaplan http://www.cgl.uwaterloo.ca/csk/
+Craig S. Kaplan http://www.cgl.uwaterloo.ca/csk/
 Dan Grossman http://homes.cs.washington.edu/~djg/
 Daniel S. Weld http://homes.cs.washington.edu/~weld/
 # Daniel Weise http://research.microsoft.com/~dweise/
@@ -67,23 +71,24 @@ David Glasser http://davidglasser.net/
 David Saff http://david.saff.net/
 David E. Saff http://david.saff.net/
 Derek Rayside http://web.mit.edu/drayside/www/
-Diego Garbervetsky http://www.dc.uba.ar/people/exclusivos/garbervetsky/
+Diego Garbervetsky http://lafhis.dc.uba.ar/en/~diegog
 Dilsun Kirli http://www.cs.cmu.edu/~dilsun/
 Dilsun Kn0131rln0131 http://www.cs.cmu.edu/~dilsun/
 Discrete Mathematics http://www.journals.elsevier.com/discrete-mathematics/
 Doug Woos http://www.dougwoos.com/
+E. James Whitehead, Jr. https://users.soe.ucsc.edu/~ejw/
+E. James Whitehead,Â Jr. https://users.soe.ucsc.edu/~ejw/
 ECOOP '98 http://ecoop98.vub.ac.be/
 ECOOP 2004 http://www.ifi.uio.no/ecoop2004/
 ECOOP 2008 https://ecoop08.cs.ucy.ac.cy/
-Edward X. Wu http://www.edwardxwu.com/
+# Webpage works, but link checker gives 500 error that I can't figure out how to resolve:
+# Edward X. Wu https://www.edwardxwu.com/
+Elizabeth L. Wilmer https://new.oberlin.edu/arts-and-sciences/departments/mathematics/faculty_detail.dot?id=21297
+Elwyn Berlekamp https://math.berkeley.edu/~berlek/
+Emina Torlak https://homes.cs.washington.edu/~emina/
+Erik Poll http://www.cs.ru.nl/~erikpoll/
 ESEC/FSE 2003 http://esecfse.cs.helsinki.fi/
 ESEC/FSE 2007 http://www.idt.mdh.se/esec-fse-2007/
-# Broken as of 9/14/2015, still broken 10/19/2015
-# Elizabeth L. Wilmer http://www.oberlin.edu/math/faculty/wilmer.html
-Elwyn Berlekamp https://math.berkeley.edu/~berlek/
-E. James Whitehead, Jr. https://users.soe.ucsc.edu/~ejw/
-E. James Whitehead,Â Jr. https://users.soe.ucsc.edu/~ejw/
-Erik Poll http://www.cs.ru.nl/~erikpoll/
 Fausto Spoto http://profs.sci.univr.it/~spoto/
 # Feihui Li http://www.cse.psu.edu/~feli/
 # Broken, and Yashwant K. Malaiya <malaiya@cs.colostate.edu> hasn't fixed it:
@@ -104,7 +109,8 @@ Greg J. Badros http://www.badros.com/greg/
 Greg Morrisett http://www.eecs.harvard.edu/~greg/
 Hao Lü https://www.linkedin.com/in/hao-lu-86704177
 # ICSE '99 http://sunset.usc.edu/icse99/
-ICSE 2000 http://www.ul.ie/~icse2000/
+# ICSE 2000 http://www.ul.ie/~icse2000/
+ICSE 2000 http://web.archive.org/web/20160405001534/http://www3.ul.ie/~icse2000/
 # ICSE 2001 http://www.cs.uvic.ca/icse2001/
 ICSE 2001 http://www.icse-conferences.org/2001/
 ICSE'03 http://www.icse-conferences.org/2003/
@@ -115,6 +121,7 @@ ICSM 2001 http://www.dsi.unifi.it/icsm2001/
 ICSM 2004 http://www.cs.iit.edu/~icsm2004/
 IEEE Transactions on Software Engineering http://www.computer.org/web/tse
 IJCAI-97 http://www.ijcai.org/past/ijcai-97/
+Irfan Ul Haq http://software.imdea.org/people/irfanul.haq/
 ISSTA 2000 http://www.ics.uci.edu/~irus/issta/
 ISSTA 2002 http://labse.isti.cnr.it/ISSTA2002/
 ISSTA 2004 http://cse.unl.edu/~grother/issta2004/
@@ -127,18 +134,21 @@ Ivan Beschastnikh http://www.cs.ubc.ca/~bestchai/
 James R. Wilcox http://homes.cs.washington.edu/~jrw12/
 # Jeff Mellen http://jeffm.mit.edu/
 # Redirects to empty page as of 2/6/2008 Jeremy W. Nimmer http://alum.mit.edu/www/jwnimmer/
-Joe Kiniry http://www.itu.dk/~josr/
+Joe Kiniry https://galois.com/team/joe-kiniry/
 Johan Östlund http://user.it.uu.se/~johos902/
+José Campos http://jose.github.io/
 Jonathan Bachrach http://people.csail.mit.edu/jrb/
 Jonathan E. Cook http://www.cs.nmsu.edu/~jcook/
+Jonathan Jacky http://staff.washington.edu/jon/
+Juan Caballero https://software.imdea.org/~juanca/
 Julian Dolby http://researcher.watson.ibm.com/researcher/view.php?person=us-dolby
 Justin Mazzola Paluska http://www.mit.edu/~jmp/
-# Karl Koscher http://homes.cs.washington.edu/~supersat/
+Karl Koscher http://www.sysnet.ucsd.edu/~supersat/
 Karthick Jayaraman http://kjayaram.mysite.syr.edu/
 Kivanc Muslu http://www.kivancmuslu.com/
 Kn0131vanç Mun015Flu http://www.kivancmuslu.com/
 Konstantin Weitz http://www.konne.me/
-K. Rustan M. Leino http://research.microsoft.com/en-us/um/people/leino/	
+K. Rustan M. Leino https://www.microsoft.com/en-us/research/people/leino/
 Laura Inozemtseva http://www.linozemtseva.com/research/
 Lee Lin http://www.leelin.com/
 # was (& redirects as of 2/8/2008): http://www.lta.disco.unimib.it/homepage/leonardo.mariani/
@@ -152,7 +162,8 @@ Marcelo d'Amorim http://www.cin.ufpe.br/~damorim/
 Martin Rinard http://people.csail.mit.edu/rinard/
 #Deceased: Mary Jean Harrold http://www.cc.gatech.edu/~harrold/
 Mary Shaw http://spoke.compose.cs.cmu.edu/shaweb/
-Mauro PezzÃƒÂ¨ http://www.lta.disco.unimib.it/homepage/Mauro.Pezze/Mauro.index.htm
+Massimo Merro http://profs.sci.univr.it/~merro/
+Mauro Pezzè http://www.inf.usi.ch/faculty/pezze/
 #Don't use "MIT" because it is a substring of other strings
 # MIT http://web.mit.edu/
 MIT Computer Science & Artificial Intelligence Laboratory http://www.csail.mit.edu/
@@ -165,7 +176,8 @@ Michael Carbin http://people.csail.mit.edu/mcarbin/
 Michael D. Ernst http://homes.cs.washington.edu/~mernst/
 Michael Ernst http://homes.cs.washington.edu/~mernst/
 # Michael Harder http://web.mit.edu/mharder/www/
-Microsoft Research http://research.microsoft.com/en-us/
+Microsoft Research https://www.microsoft.com/en-us/research/
+Mohsen Vakilian https://reprogrammer.github.io/
 # MSR 2007 http://msr.uwaterloo.ca/msr2007/
 # M-TOOS 2006 http://research.microsoft.com/conferences/mtoos06/
 Nancy Lynch http://people.csail.mit.edu/lynch/
@@ -178,7 +190,9 @@ OOPSLA 2008 http://www.oopsla.org/oopsla2008/
 Orna Raz http://www-2.cs.cmu.edu/~ornar/
 PASTE'04 http://www.st.cs.uni-saarland.de/paste/
 PASTE 2005 http://homes.cs.washington.edu/~mernst/meetings/paste2005/
-# Paul Pham http://homes.cs.washington.edu/~ppham/
+# Paul Pham (no homepage as of 2/2016) http://homes.cs.washington.edu/~ppham/
+Paul Vines http://homes.cs.washington.edu/~plvines/
+Paulo Barros http://www.cin.ufpe.br/~pbsf/
 Pavel Panchekha https://pavpanchekha.com/
 Peter Müller http://www.pm.inf.ethz.ch/
 Philip J. Guo http://www.pgbovine.net/
@@ -190,9 +204,11 @@ PLAS 2007 http://www.cs.umd.edu/~mwh/PLAS07/
 PLDI 2008 http://pldi2008.cs.ucr.edu/
 Ravi Bhoraskar http://ravi.bhoraskar.com/
 Raymond Cheng https://raymondcheng.net/
-Reid Holmes https://cs.uwaterloo.ca/~rtholmes/
-René Just http://homes.cs.washington.edu/~rjust/
+Reid Holmes http://www.cs.ubc.ca/~rtholmes/
+René Just https://people.cs.umass.edu/~rjust/
 # Empty as of 11/2002 and 2/2014: Roger F. Crew http://www-cs-students.stanford.edu/~crew/
+# Rui Maranhao publishes as Rui Abreu
+Rui Abreu https://branded.me/rui-maranhao
 Ruth Anderson http://homes.cs.washington.edu/~rea/
 # RV'01 http://ase.arc.nasa.gov/rv/
 Sai Zhang http://zhang-sai.github.io/
@@ -200,22 +216,26 @@ Saman Amarasinghe http://people.csail.mit.edu/saman/
 # Saurabh Sinha http://www.cc.gatech.edu/~sinha/
 SAVCBS 2004 http://www.eecs.ucf.edu/~leavens/SAVCBS/2004/
 Sergio Yovine http://lafhis.dc.uba.ar/en/~syovine
-Seungyeop Han http://homes.cs.washington.edu/~syhan/
+Seungyeop Han http://haneul.github.io
 Seth Cooper http://www.ccs.neu.edu/home/scooper/
 Seung Woo Son http://users.eecs.northwestern.edu/~sson/
 Shay Artzi http://people.csail.mit.edu/artzi/
 Shriram Krishnamurthi http://cs.brown.edu/~sk/
-Shuvendu K. Lahiri http://research.microsoft.com/en-us/people/shuvendu/
+Shuvendu K. Lahiri https://www.microsoft.com/en-us/research/people/shuvendu/
+Siwakorn Srisakaokul https://web.engr.illinois.edu/~srisaka2/
 Software Tools for Technology Transfer http://sttt.cs.uni-dortmund.de/
+Spencer Pearson http://speezepearson.github.io/
 Sri Hari Krishna Narayanan http://www.mcs.anl.gov/~snarayan/
 Stelios Sidiroglou http://people.csail.mit.edu/stelios/
 Stephen J. Garland http://people.csail.mit.edu/garland/
 Stephen McCamant http://people.csail.mit.edu/smcc/
+Steve Anton https://www.linkedin.com/in/steve-anton-944aa36b
 Steven A. Wolfman http://www.cs.ubc.ca/~wolf/
 Steven P. Reiss http://cs.brown.edu/~spr/
+Stuart Pernsteiner http://homes.cs.washington.edu/~spernste/
 Sunghun Kim http://www.cse.ust.hk/~hunkim/
 Tao Xie http://people.engr.ncsu.edu/txie/
-Thomas Ball http://research.microsoft.com/en-us/people/tball/
+Thomas Ball https://www.microsoft.com/en-us/research/people/tball/
 Thomas Anderson http://www.cs.washington.edu/people/faculty/tom/
 Thomas E. Anderson http://www.cs.washington.edu/people/faculty/tom/
 Thomas Jensen http://www.irisa.fr/lande/jensen/
@@ -228,7 +248,7 @@ Todd Schiller https://toddschiller.com/
 # Toh NeÃ‚Â Win http://web.mit.edu/tohn/www/
 University of Washington Department of Computer Science and Engineering http://www.cs.washington.edu/
 # University of Washington http://www.washington.edu/
-Victor Braberman http://www.dc.uba.ar/people/exclusivos/vbraber/
+Victor Braberman http://lafhis.dc.uba.ar/en/~vbraber/
 Vijay Ganesh http://ece.uwaterloo.ca/~vganesh/
 # Temporarily commented out to avoid breaking http://homes.cs.washington.edu/~mernst/pubs/haloop-vldb2012-abstract.html
 # VLDB 2010 http://vldb2010.org/
@@ -242,15 +262,16 @@ Will Scott https://wills.co.tt/#main
 Willem Visser http://www.cs.sun.ac.za/~wvisser/
 William G. Griswold http://cseweb.ucsd.edu/~wgg/
 William Thies http://research.microsoft.com/en-us/um/people/thies/
+Wing Lam http://winglam2.web.engr.illinois.edu/
 # The shorter name substitutes within the longer ones, so omit one or the other.
 # WODA 2003 http://www.cs.nmsu.edu/~jcook/woda2003/
 Workshop on Dynamic Analysis (WODA 2003) http://www.cs.nmsu.edu/~jcook/woda2003/
 WODA 2003: ICSE Workshop on Dynamic Analysis http://www.cs.nmsu.edu/~jcook/woda2003/
-WS-MaTe 2006 http://www.selab.isti.cnr.it/ws-mate/
+# WS-MaTe 2006 http://www.selab.isti.cnr.it/ws-mate/
 Xi Wang http://homes.cs.washington.edu/~xi/
 # Xiaoxia Ren http://www.research.rutgers.edu/~xren/
 Yannis Smaragdakis http://cgi.di.uoa.gr/~smaragd/
-Yingyi Bu http://www.ics.uci.edu/~yingyib/
+Yingyi Bu http://sigmod.github.io/
 Yoav Zibin http://yoav-zibin.github.io/homepage/
 Yoonsik Cheon http://www.cs.utep.edu/cheon/
 #Permanent: Yuriy Brun http://alum.mit.edu/www/brun/

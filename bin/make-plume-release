@@ -1,11 +1,12 @@
 #!/bin/bash
 
 # Script that creates a plume-lib release.
+# It also adds tags to the repository.
 
-# If you just want to make plume.jar for your own use, then instead use:
+# If you just want to make plume.jar for your own use, then instead use one of:
 #   make jar
-# or alternately
-#   make JAVAC_TARGET_FLAGS="-target 5" jar
+#   make JAVAC_TARGET_FLAGS="-target 7" jar
+#   make JAVAC_TARGET_FLAGS="-target 7" ALWAYS_CHECK_TYPES=1 clean jar
 # You can also find a pre-built plume.jar in the plume-lib release, in a
 # file such as plume-lib-1.0.0/java/plume.jar .
 
@@ -30,22 +31,22 @@ if ! git status 2>&1 > /dev/null; then
     echo "$PWD is not a Git repository."
 fi
 
-if git diff --exit-code; then
+if ! git diff --exit-code; then
     echo "Unstaged local changes; stage, commit, and push changes before making a release."
     exit 1
 fi
 
-if git diff --cached --exit-code; then
+if ! git diff --cached --exit-code; then
     echo "Staged but uncommited local changes; stage and push changes before making a release."
     exit 1
 fi
 
-if git log --branches --not --remotes &> /dev/null; then
+if ! git log --branches --not --remotes &> /dev/null; then
     echo "Unpushed changes; push changes before making a release."
     exit 1
 fi
 
-if [[ ! $(${JAVAC-"javac"} -version 2>&1) =~ "javac 1.8.0-jsr308" ]]; then
+if [[ ! $(${JAVAC-"javac"} -version 2>&1) =~ "jsr308" ]]; then
     echo "Please use the JSR 308 compiler to make a release."
     exit 1
 fi
@@ -77,7 +78,7 @@ fi
 
 echo "[3/6] Building plume-lib."
 export JAVAC_TARGET_FLAGS="-target 7"
-make -C "$release/java" all
+make -C "$release/java" ALWAYS_CHECK_TYPES=1 all
 if [[ $? -ne 0 ]]; then
     echo "Error building plume-lib."
     exit 1;
@@ -102,8 +103,12 @@ done_release() {
     echo "To finalize the release, perform the following steps manually:"
     echo "* Push the newly created tag by running:  git push --tags"
     if ! $uploaded; then
-        echo "* Make a new relase on GitHub at https://github.com/mernst/plume-lib/releases/new"
-        echo "* Upload $release_tar to GitHub"
+        echo "* Make a new release on GitHub:"
+        echo "   * browse to https://github.com/mernst/plume-lib/releases/new"
+        echo "   * tag is: v$new"
+        echo "   * Release title is: plume-lib version $new"
+        echo "   * description from docs/changelog.txt, with hard line breaks removed"
+        echo "   * attach ${PWD}${release_tar}"
     fi
     exit 0
 }
@@ -114,28 +119,28 @@ uploaded=false
 # echo ""
 # echo -n "Attempt to upload release to Google Code? [y/n]: "
 # read answer
-# 
+#
 # ans=${answer:0:1}
 # if [[ ! ($ans = "y" || $ans = "Y") ]]; then
 #     done_release
 # fi
-# 
+#
 # if ! which googlecode_upload.py &> /dev/null; then
 #     echo "Could not find googlecode_upload.py in PATH."
 #     done_release
 # fi
-# 
+#
 # googlecode_upload.py \
 #     --summary "Plume-lib v$new release" \
 #     --project "plume-lib" \
 #     --labels "Type-Source" \
 #     "$release_tar"
-# 
+#
 # if [[ $? -ne 0 ]] ; then
 #     echo "Uploading to Google Code failed."
 #     done_release
 # fi
-# 
+#
 # uploaded=true
 # echo "Uploaded $release_tar to Google Code successfully."
 
